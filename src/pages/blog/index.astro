@@ -5,83 +5,167 @@ import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
 import Header from '../../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+const blogTitle = 'Блог';
+const blogDescription =
+	'Архив заметок Attic Notes: проекты, идеи, наблюдения и небольшие эксперименты, которые хочется сохранить.';
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+const posts = (await getCollection('blog'))
+	.filter((post) => !post.data.draft)
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={blogTitle} description={blogDescription} />
 		<style>
 			main {
-				width: 960px;
+				display: grid;
+				gap: 1.5rem;
+			}
+			.intro {
+				padding: 2rem clamp(1.2rem, 3vw, 2.4rem);
+				background: var(--surface-paper);
+				border: 1px solid var(--surface-border);
+				border-radius: var(--radius);
+				box-shadow: var(--shadow);
+			}
+			.intro span {
+				display: inline-block;
+				margin-bottom: 0.8rem;
+				font-family: 'Instrument Serif', serif;
+				font-style: italic;
+				font-size: 1.1rem;
+				color: rgba(var(--ink-soft), 0.88);
+			}
+			.intro h1 {
+				margin-bottom: 0.75rem;
+			}
+			.intro p {
+				max-width: 42rem;
 			}
 			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
+				display: grid;
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+				gap: 1.25rem;
 				list-style-type: none;
 				margin: 0;
 				padding: 0;
 			}
-			ul li {
-				width: calc(50% - 1rem);
+			li {
+				position: relative;
 			}
-			ul li * {
+			li:first-child {
+				grid-column: 1 / -1;
+			}
+			.article-link {
+				display: grid;
+				gap: 0.9rem;
+				height: 100%;
+				padding: 1rem;
 				text-decoration: none;
-				transition: 0.2s ease;
+				background: var(--surface-paper);
+				border: 1px solid var(--surface-border);
+				border-radius: var(--radius);
+				box-shadow: var(--shadow-soft);
+				transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 			}
-			ul li:first-child {
+			.article-link:hover {
+				transform: translateY(-2px) rotate(-0.2deg);
+				box-shadow: var(--shadow);
+				border-color: var(--surface-border-strong);
+			}
+			li:first-child .article-link {
+				grid-template-columns: minmax(0, 1.2fr) minmax(240px, 0.95fr);
+				align-items: stretch;
+				padding: 1.2rem;
+			}
+			.figure-wrap {
+				order: 2;
+			}
+			li:first-child .figure-wrap {
+				order: initial;
+			}
+			li:first-child img {
 				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
+				height: 100%;
+				object-fit: cover;
 			}
-			ul li:first-child img {
-				width: 100%;
+			.article-copy {
+				display: grid;
+				align-content: start;
+				gap: 0.5rem;
 			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
+			.article-tag {
+				display: inline-flex;
+				width: fit-content;
+				padding: 0.2rem 0.55rem;
+				font-size: 0.85rem;
+				letter-spacing: 0.06em;
+				text-transform: uppercase;
+				border-radius: 999px;
+				background: var(--pill-fill);
+				border: 1px solid var(--pill-border);
 			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
+			img {
 				display: block;
+				width: 100%;
+				height: 220px;
+				object-fit: cover;
+				border-radius: 18px;
+				filter: var(--image-filter);
 			}
 			.title {
 				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
+				color: rgb(var(--ink));
+				line-height: 1.06;
+			}
+			li:first-child .title {
+				font-size: clamp(2.1rem, 5vw, 3.4rem);
 			}
 			.date {
 				margin: 0;
-				color: rgb(var(--gray));
+				font-size: 0.96rem;
+				color: rgba(var(--ink-soft), 0.8);
 			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
+			.description {
+				margin: 0;
+				color: rgba(var(--ink-soft), 0.94);
 			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
+			.read-more {
+				margin-top: auto;
+				font-family: 'Instrument Serif', serif;
+				font-style: italic;
+			}
+			.tags {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.4rem;
+				padding: 0;
+				margin: 0;
+				list-style: none;
+			}
+			.tags li {
+				padding: 0.12rem 0.45rem;
+				border-bottom: 1px dashed var(--line);
+				font-size: 0.92rem;
 			}
 			@media (max-width: 720px) {
 				ul {
-					gap: 0.5em;
+					grid-template-columns: 1fr;
 				}
-				ul li {
-					width: 100%;
-					text-align: center;
+				li:first-child {
+					grid-column: auto;
 				}
-				ul li:first-child {
-					margin-bottom: 0;
+				li:first-child .article-link {
+					grid-template-columns: 1fr;
+					padding: 1rem;
 				}
-				ul li:first-child .title {
-					font-size: 1.563em;
+				ul {
+					gap: 1rem;
+				}
+				img {
+					height: 200px;
 				}
 			}
 		</style>
@@ -89,19 +173,38 @@ const posts = (await getCollection('blog')).sort(
 	<body>
 		<Header />
 		<main>
+			<section class="intro">
+				<span>архив чердака</span>
+				<h1>Блог</h1>
+				<p>
+					Здесь лежат заметки о проектах, идеях, маленьких экспериментах и вещах, которые хочется не потерять.
+				</p>
+			</section>
 			<section>
 				<ul>
 					{
 						posts.map((post) => (
 							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
+								<a class="article-link" href={`/blog/${post.id}/`}>
+									<div class="figure-wrap">
+										{post.data.heroImage && (
+											<Image width={720} height={360} src={post.data.heroImage} alt="" />
+										)}
+									</div>
+									<div class="article-copy">
+										<span class="article-tag">{post.data.featured ? 'выбрано' : 'заметка'}</span>
+										<p class="date">
+											<FormattedDate date={post.data.pubDate} />
+										</p>
+										<h2 class="title">{post.data.title}</h2>
+										<p class="description">{post.data.description}</p>
+										{post.data.tags.length > 0 && (
+											<ul class="tags">
+												{post.data.tags.map((tag) => <li>{tag}</li>)}
+											</ul>
+										)}
+										<span class="read-more">Открыть листок -&gt;</span>
+									</div>
 								</a>
 							</li>
 						))

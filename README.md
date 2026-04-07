@@ -1,62 +1,132 @@
-# Astro Starter Kit: Blog
+# Attic Notes
+
+Attic Notes is a personal blog built with Astro.
+
+The project is designed as a quiet archive for notes, experiments, project traces, and short texts, with a paper-and-ink visual style, RSS, sitemap, and basic SEO already in place.
+
+## Stack
+
+- Astro 6
+- TypeScript (`strict`)
+- MD and MDX content collections
+- ESLint for linting
+- GitHub Actions for CI
+
+## Features
+
+- custom paper-themed UI with light and dark modes
+- blog posts stored in `src/content/blog`
+- typed content schema with `draft`, `tags`, `featured`, and `heroImage`
+- RSS feed
+- sitemap generation
+- canonical URLs and Open Graph metadata
+- structured data for blog posts
+
+## Requirements
+
+- Node.js `>=22.12.0`
+- npm
+
+## Local Development
+
+Install dependencies:
 
 ```sh
-npm create astro@latest -- --template blog
+npm install
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Start the dev server:
 
-Features:
+```sh
+npm run dev
+```
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+The site will be available at `http://localhost:4321`.
 
-## 🚀 Project Structure
+## Scripts
 
-Inside of your Astro project, you'll see the following folders and files:
+| Command | Description |
+| :-- | :-- |
+| `npm run dev` | Start local Astro dev server |
+| `npm run lint` | Run ESLint |
+| `npm run check` | Run `astro check` |
+| `npm run build` | Run `astro check` and build to `dist/` |
+| `npm run preview` | Preview the production build locally |
+
+## Project Structure
 
 ```text
-├── public/
+.
+├── .github/workflows/   # CI workflows
+├── public/              # static public files
 ├── src/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
+│   ├── assets/          # images used by the site and posts
+│   ├── components/      # shared Astro components
+│   ├── content/         # blog content collections
+│   ├── layouts/         # page and post layouts
+│   ├── pages/           # routes
+│   ├── styles/          # global styles and theme tokens
+│   └── consts.ts        # global site metadata
 ├── astro.config.mjs
-├── README.md
+├── eslint.config.mjs
 ├── package.json
 └── tsconfig.json
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Content
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+Posts live in `src/content/blog` as `.md` or `.mdx` files.
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+The current content schema includes:
 
-Any static assets, like images, can be placed in the `public/` directory.
+- `title`
+- `description`
+- `pubDate`
+- `updatedDate`
+- `draft`
+- `tags`
+- `featured`
+- `heroImage`
 
-## 🧞 Commands
+Draft posts are excluded from the blog index and RSS.
 
-All commands are run from the root of the project, from a terminal:
+## SEO
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+The project already includes:
 
-## 👀 Want to learn more?
+- canonical URLs
+- Open Graph and Twitter metadata
+- `robots.txt`
+- `sitemap-index.xml`
+- `rss.xml`
+- `BlogPosting` structured data for post pages
 
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Production URL is configured as `https://attic-notes.site`.
 
-## Credit
+## CI
 
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+GitHub Actions workflow is defined in `.github/workflows/ci.yml`.
+
+It runs on pushes to `main` and on pull requests, and checks:
+
+- dependency installation
+- ESLint
+- Astro build
+
+## Deployment Notes
+
+The project builds to static output in `dist/`, so it can be deployed to:
+
+- Vercel
+- Netlify
+- Cloudflare Pages
+- a self-hosted VPS serving `dist/` through Caddy or another static web server
+
+## License
+
+License is not defined yet.
+
+If you plan to open-source the code while keeping the writing and visual assets protected, a good next step is:
+
+- `MIT` for code
+- separate rights notice for posts and images

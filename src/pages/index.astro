@@ -1,48 +1,232 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { SITE_TITLE } from '../consts';
+
+const homeTitle = SITE_TITLE;
+const homeDescription =
+	'Attic Notes - личный архив заметок о проектах, наблюдениях, экспериментах и идеях, к которым хочется возвращаться.';
+
+const posts = (await getCollection('blog'))
+	.filter((post) => !post.data.draft)
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const featuredPost = posts.find((post) => post.data.featured) ?? posts[0];
+const recentPosts = posts.filter((post) => post.id !== featuredPost?.id).slice(0, 2);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={homeTitle} description={homeDescription} />
+		<style>
+			main {
+				display: grid;
+				gap: 1.5rem;
+			}
+			.hero,
+			.note,
+			.recent-card {
+				position: relative;
+				background: var(--surface-paper);
+				border: 1px solid var(--surface-border);
+				border-radius: var(--radius);
+				box-shadow: var(--shadow);
+			}
+			.hero {
+				padding: 2.5rem clamp(1.4rem, 3vw, 3rem);
+				overflow: hidden;
+			}
+			.hero::after,
+			.note::after,
+			.recent-card::after {
+				content: '';
+				position: absolute;
+				inset: 0;
+				background: var(--surface-overlay);
+				pointer-events: none;
+			}
+			.eyebrow,
+			.note-label,
+			.recent-label {
+				display: inline-block;
+				margin-bottom: 0.85rem;
+				font-family: 'Instrument Serif', serif;
+				font-style: italic;
+				font-size: 1.15rem;
+				color: rgba(var(--ink-soft), 0.88);
+			}
+			.hero h1 {
+				max-width: 11ch;
+				margin-bottom: 1rem;
+			}
+			.hero p {
+				max-width: 40rem;
+				font-size: 1.18rem;
+			}
+			.hero-actions {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.8rem;
+				margin-top: 1.5rem;
+			}
+			.action,
+			.secondary-action {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.35rem;
+				padding: 0.72rem 1rem;
+				border-radius: 999px;
+				text-decoration: none;
+				transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+			}
+			.action {
+				background: var(--button-fill);
+				color: var(--button-text);
+				box-shadow: var(--shadow-soft);
+			}
+			.secondary-action {
+				background: var(--button-soft);
+				border: 1px solid var(--button-soft-border);
+			}
+			.action:hover,
+			.secondary-action:hover {
+				transform: translateY(-1px);
+			}
+			.meta-grid {
+				display: grid;
+				grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr);
+				gap: 1.5rem;
+			}
+			.note {
+				padding: 1.5rem;
+			}
+			.note p {
+				max-width: 34rem;
+			}
+			.note ul {
+				margin: 1rem 0 0;
+				padding-left: 1.2rem;
+			}
+			.note li {
+				margin-bottom: 0.4rem;
+			}
+			.featured-card {
+				padding: 1.5rem;
+				border-radius: var(--radius);
+				background: var(--surface-note);
+				border: 1px dashed var(--surface-border-strong);
+			}
+			.featured-card h2 {
+				font-size: clamp(2rem, 4vw, 3rem);
+				margin-bottom: 0.4rem;
+			}
+			.featured-card .meta,
+			.recent-card .meta {
+				margin-bottom: 0.8rem;
+				font-size: 0.98rem;
+				color: rgba(var(--ink-soft), 0.8);
+			}
+			.recent {
+				display: grid;
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+				gap: 1rem;
+			}
+			.recent-card {
+				padding: 1.25rem;
+			}
+			.recent-card h3 {
+				font-size: 2rem;
+				margin-bottom: 0.35rem;
+			}
+			.read-link {
+				display: inline-flex;
+				margin-top: 0.8rem;
+				font-family: 'Instrument Serif', serif;
+				font-style: italic;
+				text-decoration: none;
+			}
+			@media (max-width: 900px) {
+				.meta-grid,
+				.recent {
+					grid-template-columns: 1fr;
+				}
+			}
+			@media (max-width: 720px) {
+				.hero {
+					padding: 1.7rem 1.2rem;
+				}
+				.hero p {
+					font-size: 1.05rem;
+				}
+			}
+		</style>
 	</head>
 	<body>
 		<Header />
 		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This template
-				serves as a lightweight, minimally-styled starting point for anyone looking to build a personal
-				website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
+			<section class="hero">
+				<span class="eyebrow">attic notes, vol. i</span>
+				<h1>Тихий чердачок для заметок</h1>
+				<p>
+					Добро пожаловать. Меня зовут Антон, и здесь я складываю мысли, следы от проектов, наблюдения и
+					всякие небольшие вещи, которые хочется не потерять среди повседневного шума.
+				</p>
+				<p>
+					Это не витрина и не попытка быть громче других. Скорее личная стопка бумажных листков, к которым можно
+					возвращаться спустя время и смотреть, чем я жил, что запускал, бросал или неожиданно доводил до конца.
+				</p>
+				<div class="hero-actions">
+					<a class="action" href="/blog">Открыть заметки</a>
+					<a class="secondary-action" href="https://github.com/pyKorgot" target="_blank">Посмотреть GitHub</a>
+				</div>
+			</section>
+
+			<section class="meta-grid">
+				<article class="note">
+					<span class="note-label">На полях</span>
+					<p>
+						Пока сайт только складывается. Здесь будут короткие записи, небольшие тексты о проектах, случайные
+						наблюдения и вещи, которым я хочу оставить хотя бы маленький бумажный след.
+					</p>
+					<ul>
+						<li>заметки без лишнего шума</li>
+						<li>проекты и их черновые следы</li>
+						<li>идеи, к которым можно вернуться позже</li>
+					</ul>
+				</article>
+
+				{featuredPost && (
+					<article class="featured-card">
+						<span class="note-label">Выбранная запись</span>
+						<div class="meta">
+							<FormattedDate date={featuredPost.data.pubDate} />
+						</div>
+						<h2>{featuredPost.data.title}</h2>
+						<p>{featuredPost.data.description}</p>
+						<a class="read-link" href={`/blog/${featuredPost.id}/`}>Читать запись -&gt;</a>
+					</article>
+				)}
+			</section>
+
+			{recentPosts.length > 0 && (
+				<section class="recent">
+					{recentPosts.map((post) => (
+						<article class="recent-card">
+							<span class="recent-label">Из свежих листков</span>
+							<div class="meta">
+								<FormattedDate date={post.data.pubDate} />
+							</div>
+							<h3>{post.data.title}</h3>
+							<p>{post.data.description}</p>
+							<a class="read-link" href={`/blog/${post.id}/`}>Открыть заметку -&gt;</a>
+						</article>
+					))}
+				</section>
+			)}
 		</main>
 		<Footer />
 	</body>
