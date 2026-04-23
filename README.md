@@ -103,15 +103,33 @@ The project already includes:
 
 Production URL is configured as `https://attic-notes.site`.
 
-## CI
+## CI/CD
 
-GitHub Actions workflow is defined in `.github/workflows/ci.yml`.
+GitHub Actions workflows are defined in `.github/workflows/ci.yml` and `.github/workflows/deploy.yml`.
 
-It runs on pushes to `main` and on pull requests, and checks:
+`CI` runs on pushes to `master` and on pull requests, and checks:
 
 - dependency installation
 - ESLint
 - Astro build
+
+`Deploy` runs on pushes to `master` and via manual `workflow_dispatch`. It:
+
+- builds the site in GitHub Actions
+- uploads `dist/` as an artifact
+- deploys the artifact to a VPS over SSH with `rsync`
+- targets the `production` environment
+
+### Deployment Secrets
+
+Configure these GitHub environment secrets for `production`:
+
+- `SSH_HOST` - VPS hostname or IP
+- `SSH_PORT` - SSH port, usually `22`
+- `SSH_USER` - deploy user on the server
+- `SSH_PRIVATE_KEY` - private key allowed to write to the deploy directory
+- `SSH_KNOWN_HOSTS` - output of `ssh-keyscan -p <port> <host>`
+- `DEPLOY_PATH` - directory served by Caddy, for example `/var/www/attic-notes`
 
 ## Deployment Notes
 
@@ -121,6 +139,11 @@ The project builds to static output in `dist/`, so it can be deployed to:
 - Netlify
 - Cloudflare Pages
 - a self-hosted VPS serving `dist/` through Caddy or another static web server
+
+For the current setup, the recommended self-hosted layout is:
+
+- Caddy serves files from `/var/www/attic-notes`
+- GitHub Actions deploys `dist/` into that directory with `rsync --delete`
 
 ## License
 
